@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/posts_item"
+        android:icon="@drawable/ic_download_posts"
+        android:title="@string/posts_string"
+        android:contentDescription="@string/posts_string"/>
+
+    <item
+        android:id="@+id/cache_item"
+        android:icon="@drawable/ic_folder"
+        android:title="@string/cache_string"
+        android:contentDescription="@string/cache_string" />
+
+
+</menu>

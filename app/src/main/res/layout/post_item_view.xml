@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_10dp"
+    android:elevation="@dimen/cardview_elevation"
+    app:cardCornerRadius="@dimen/cardview_corners_radius_8dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.zinoview.fragmenttagapp.presentation.customview.TitleTextView
+            android:id="@+id/title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_10dp"
+            android:layout_marginStart="100dp"
+            android:textColor="@color/design_default_color_primary"
+            android:textSize="@dimen/title_tv_size"
+            android:textStyle="bold"
+            tools:text="Title" />
+
+        <com.zinoview.fragmenttagapp.presentation.customview.BodyTextView
+            android:id="@+id/body_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:layout_marginStart="@dimen/margin_10dp"
+            android:textColor="@color/design_default_color_primary"
+            android:textSize="@dimen/body_tv_size"
+            android:layout_marginBottom="@dimen/margin_5dp"
+            tools:text="Body...." />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+

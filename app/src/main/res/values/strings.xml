@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">FragmentTagApp</string>
+    <string name="no_connection_message">No connection</string>
+    <string name="service_unavailable_message">Sorry, service unavailable</string>
+    <string name="some_went_wrong_message">Some went wrong...</string>
+    <string name="posts_string">Posts</string>
+    <string name="cache_string">Cache</string>
+    <string name="error_creat_file_message">Error in creating file</string>
+    <string name="not_created_file_message">File yet not created</string>
+    <string name="some_went_wrong_with_exception_message">Some went wrong, exception class:</string>
+    <string name="success_writing_data_to_cache_message">Success writing data to cache</string>
+</resources>
