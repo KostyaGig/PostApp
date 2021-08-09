@@ -1,18 +1,23 @@
 package com.zinoview.fragmenttagapp.core
 
 import android.app.Application
-import com.zinoview.fragmenttagapp.data.CachePostRepository
+import com.zinoview.fragmenttagapp.data.cache.CachePostRepository
 import com.zinoview.fragmenttagapp.data.PostRepository
 import com.zinoview.fragmenttagapp.data.cache.File
 import com.zinoview.fragmenttagapp.data.cache.FileCommunicator
 import com.zinoview.fragmenttagapp.data.cloud.PostCloudDataSource
 import com.zinoview.fragmenttagapp.data.cloud.PostDataMapper
 import com.zinoview.fragmenttagapp.data.cloud.PostService
-import com.zinoview.fragmenttagapp.domain.CachePostInteractor
+import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
 import com.zinoview.fragmenttagapp.domain.ListPostDomainMapper
 import com.zinoview.fragmenttagapp.domain.PostDomainMapper
 import com.zinoview.fragmenttagapp.domain.PostInteractor
+import com.zinoview.fragmenttagapp.domain.cache.PostReadDomainCacheMapper
+import com.zinoview.fragmenttagapp.domain.cache.PostRecordDomainCacheMapper
 import com.zinoview.fragmenttagapp.presentation.*
+import com.zinoview.fragmenttagapp.presentation.cache.CachePostCommunication
+import com.zinoview.fragmenttagapp.presentation.cache.CachePostViewModel
+import com.zinoview.fragmenttagapp.presentation.cache.UiPostCacheMapper
 import com.zinoview.fragmenttagapp.presentation.navigation.ModelNavigator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,6 +33,7 @@ class PostApp : Application() {
 
     lateinit var postViewModel: PostViewModel
     lateinit var cachePostViewModel: CachePostViewModel
+    lateinit var fileComunicator: FileCommunicator
 
     override fun onCreate() {
         super.onCreate()
@@ -37,6 +43,7 @@ class PostApp : Application() {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
@@ -52,17 +59,9 @@ class PostApp : Application() {
 
         val postInteractor = PostInteractor.Base(
             postRepository,
-            ListPostDomainMapper(PostDomainMapper(),Abstract.FactoryMapper.ExceptionMapper())
+            ListPostDomainMapper(PostDomainMapper(),Abstract.FactoryMapper.CloudExceptionMapper())
         )
-        val postCommunication = PostCommunication.Base()
-
         val resource = Resource.Base(this)
-        postViewModel = PostViewModel(
-            postInteractor,
-            ListPostUiMapper(PostUiMapper(),Abstract.FactoryMapper.IOExceptionMapper(resource)),
-            ModelNavigator.Base(Check.NullCheck()),
-            Pair(postCommunication,UiPostMapper())
-        )
 
         val fileProvider = FileProvider.Base(this)
 
@@ -70,18 +69,34 @@ class PostApp : Application() {
             fileProvider,
         )
 
-        val fileComunicator = FileCommunicator.Base(txtFile)
+        fileComunicator = FileCommunicator.Base(txtFile)
 
-        val cachePostRepository = CachePostRepository.Base(fileComunicator)
+        val cachePostRepository = CachePostRepository.Base(fileComunicator,resource)
         val cachePostInteractor = CachePostInteractor.Base(
-            cachePostRepository
+            cachePostRepository,
+            PostRecordDomainCacheMapper(Abstract.FactoryMapper.CacheExceptionMapper(),Abstract.FactoryMapper.RecordDomainCacheStringMapper()),
+            PostReadDomainCacheMapper(Abstract.FactoryMapper.CacheExceptionMapper()),
         )
 
         val ioExceptionMapper = Abstract.FactoryMapper.CacheErrorMessageMapper(resource)
         cachePostViewModel = CachePostViewModel(
             cachePostInteractor,
-            CachePostCommunication.Base(),
-            PostUiCacheMapper(ioExceptionMapper)
+            Pair(
+                CachePostCommunication.Base.CacheRecordPostCommunication(),
+                CachePostCommunication.Base.CacheReadPostCommunication()),
+            Pair(
+                UiPostCacheMapper.Record(ioExceptionMapper,Abstract.FactoryMapper.RecordUiCacheStringMapper()),
+                UiPostCacheMapper.Read(ioExceptionMapper)
+            )
+        )
+
+        val postCommunication = PostCommunication.Base()
+        postViewModel = PostViewModel(
+            postInteractor,
+            cachePostInteractor,
+            ListPostUiMapper(PostUiMapper(),Abstract.FactoryMapper.IOExceptionMapper(resource)),
+            ModelNavigator.Base(Check.NullCheck()),
+            Pair(postCommunication,UiPostMapper())
         )
     }
 

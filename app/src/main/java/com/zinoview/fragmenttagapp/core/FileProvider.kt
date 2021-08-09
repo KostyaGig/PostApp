@@ -16,6 +16,7 @@ interface FileProvider {
     class Base(
         private val context: Context
     ) : FileProvider {
+
         override fun file(): File {
             val rootFile = context.filesDir
             val postDirectory = postDirectory(rootFile)
@@ -23,14 +24,19 @@ interface FileProvider {
             return postFile(postDirectory)
         }
 
+
         private fun postDirectory(rootFile: File) : File {
             val postDirectory = File(rootFile,POST_DIRECTORY)
-            Log.d("TestF","" + postDirectory.mkdirs())
+            postDirectory.mkdirs()
             return postDirectory
         }
 
-        private fun postFile(postDirectory: File) : File
-            = File(postDirectory, CACHE_FILE)
+        private fun postFile(postDirectory: File) : File {
+            val file = File(postDirectory, CACHE_FILE)
+            file.appendText("")
+            return file
+        }
+
 
         private companion object {
             const val POST_DIRECTORY = "PostCache"

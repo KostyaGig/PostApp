@@ -30,9 +30,10 @@ class PostAdapter(
     override fun getItemViewType(position: Int): Int = viewTypeMapper.map(uiPosts[position])
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder = when(viewType) {
-        0 -> PostViewHolder.PostProgressViewHolder(R.layout.progress_item_view.makeView(parent))
-        1 -> PostViewHolder.PostBaseViewHolder(R.layout.post_item_view.makeView(parent),postItemListener)
-        else -> PostViewHolder.PostFailureViewHolder(R.layout.failure_item_view.makeView(parent))
+        0 -> PostViewHolder.Progress(R.layout.progress_item_view.makeView(parent))
+        1 -> PostViewHolder.BasePostViewHolder.Base(R.layout.post_item_view.makeView(parent),postItemListener)
+        2 -> PostViewHolder.BasePostViewHolder.Cached(R.layout.cache_post_item_view.makeView(parent),postItemListener)
+        else -> PostViewHolder.Failure(R.layout.failure_item_view.makeView(parent))
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) = holder.bind(uiPosts[position])
@@ -44,9 +45,9 @@ class PostAdapter(
     abstract class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         open fun bind(uiPost: UiPost) {}
 
-        class PostProgressViewHolder(view: View) : PostViewHolder(view)
+        class Progress(view: View) : PostViewHolder(view)
 
-        class PostBaseViewHolder(view: View,private val postItemListener: PostItemListener) : PostViewHolder(view) {
+        abstract class BasePostViewHolder(view: View,private val postItemListener: PostItemListener) : PostViewHolder(view) {
             private val bodyTextView = itemView.findViewById<BodyTextView>(R.id.body_text_view)
             private val titleTextView = itemView.findViewById<TitleTextView>(R.id.title_text_view)
 
@@ -60,9 +61,15 @@ class PostAdapter(
                     postItemListener.onItemClick(uiPost)
                 }
             }
+
+            class Base(view: View, postItemListener: PostItemListener)
+                : BasePostViewHolder(view, postItemListener)
+
+            class Cached(view: View, postItemListener: PostItemListener)
+                : BasePostViewHolder(view, postItemListener)
         }
 
-        class PostFailureViewHolder(view: View) : PostViewHolder(view) {
+        class Failure(view: View) : PostViewHolder(view) {
             private val failureTextView = itemView.findViewById<BodyTextView>(R.id.failure_text_view)
 
             override fun bind(uiPost: UiPost) {

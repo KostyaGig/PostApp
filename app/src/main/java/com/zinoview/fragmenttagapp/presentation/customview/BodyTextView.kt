@@ -3,6 +3,7 @@ package com.zinoview.fragmenttagapp.presentation.customview
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import com.zinoview.fragmenttagapp.core.Abstract
 
 
 /**

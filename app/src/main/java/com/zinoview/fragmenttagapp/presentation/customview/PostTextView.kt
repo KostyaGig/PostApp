@@ -19,5 +19,5 @@ class PostTextView(
     )
 
     private fun giveInfoPost(postId: Int,userId: Int,body: String, title: String) : String
-        = "Post with id: $id,\n\n size: $userId, \n\n title: $title ,\n\n body: $body"
+        = "Post with id: $postId,\n\n size: $userId, \n\n title: $title ,\n\n body: $body"
 }

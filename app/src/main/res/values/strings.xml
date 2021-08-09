@@ -9,4 +9,5 @@
     <string name="not_created_file_message">File yet not created</string>
     <string name="some_went_wrong_with_exception_message">Some went wrong, exception class:</string>
     <string name="success_writing_data_to_cache_message">Success writing data to cache</string>
+    <string name="success_updating_cache_file">Success update cache file</string>
 </resources>

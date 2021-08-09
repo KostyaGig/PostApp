@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.zinoview.fragmenttagapp.core.PostApp
 
 
 /**
@@ -17,6 +18,10 @@ import androidx.fragment.app.Fragment
 abstract class BaseFragment : Fragment() {
 
     @LayoutRes protected abstract fun layout() : Int
+
+    protected val application by lazy {
+        (requireActivity().application as PostApp)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

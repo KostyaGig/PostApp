@@ -2,13 +2,18 @@ package com.zinoview.fragmenttagapp.core
 
 import com.zinoview.fragmenttagapp.R
 import com.zinoview.fragmenttagapp.data.PostData
+import com.zinoview.fragmenttagapp.data.cache.FailUpdatedFileException
 import com.zinoview.fragmenttagapp.domain.*
+import com.zinoview.fragmenttagapp.domain.cache.CacheDomainPost
 import com.zinoview.fragmenttagapp.presentation.*
+import com.zinoview.fragmenttagapp.presentation.cache.CacheUiPost
+import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
 import com.zinoview.fragmenttagapp.presentation.fragment.BaseFragment
 import com.zinoview.fragmenttagapp.presentation.fragment.CacheFragment
 import com.zinoview.fragmenttagapp.presentation.fragment.ListPostFragment
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.lang.IllegalArgumentException
 import java.net.HttpRetryException
 import java.net.UnknownHostException
 
@@ -44,9 +49,9 @@ abstract class Abstract {
     interface PostCacheObject<T,F> {
         fun <T> map(mapper: PostCacheMapper<T,F>) : T
 
-        interface Domain : PostCacheObject<CacheDomainPost,Exception>
+        interface Domain<T : Any> : PostCacheObject<CacheDomainPost<T>,Exception>
 
-        interface Ui : PostCacheObject<CachePostUi,IOException>
+        interface Ui<T : Any> : PostCacheObject<CacheUiPost<T>,IOException>
     }
     interface PostCacheMapper<T,F> {
 
@@ -60,7 +65,7 @@ abstract class Abstract {
 
         interface Ui : FactoryMapper<Pair<PostCommunication,PostMapper<UiPost>>,Unit>
 
-        class ExceptionMapper : FactoryMapper<Exception,IOException> {
+        class CloudExceptionMapper : FactoryMapper<Exception,IOException> {
             override fun map(src: Exception): IOException = when(src) {
                 is UnknownHostException -> NoConnectionException()
                 is HttpRetryException -> ServiceUnavailableException()
@@ -89,16 +94,17 @@ abstract class Abstract {
              override fun map(src: UiPost): Int = when(src) {
                  is UiPost.Progress -> 0
                  is UiPost.Base -> 1
-                 else -> 2
+                 is UiPost.Cached -> 2
+                 else -> 3
             }
         }
 
-        class CacheIOExceptionMapper : FactoryMapper<Exception,IOException> {
+        class CacheExceptionMapper : FactoryMapper<Exception,IOException> {
             override fun map(src: Exception): IOException = when(src) {
                 is FileNotFoundException -> FileNotCreatedException()
+                is FailUpdatedFileException -> com.zinoview.fragmenttagapp.domain.FailUpdatedFileException()
                 else -> GenericFileException()
             }
-
         }
 
         class CacheErrorMessageMapper(
@@ -107,6 +113,22 @@ abstract class Abstract {
             override fun map(src: IOException): String = when(src) {
                 is FileNotCreatedException -> resource.string(R.string.not_created_file_message)
                 else -> "${resource.string(R.string.some_went_wrong_with_exception_message)} ${src::javaClass}"
+            }
+        }
+
+        class RecordDomainCacheStringMapper : FactoryMapper<String,CacheDomainPost<RecordCacheState>> {
+            override fun map(src: String): CacheDomainPost<RecordCacheState> = when(src) {
+                "Success update cache file" -> CacheDomainPost.RecordCacheDomainPost.UpdateSuccess(src)
+                "Success writing data to cache" -> CacheDomainPost.RecordCacheDomainPost.Success(src)
+                else -> throw IllegalArgumentException("RecordDomainCacheStringMapper argument $src not found")
+            }
+        }
+
+        class RecordUiCacheStringMapper : FactoryMapper<String,CacheUiPost<RecordCacheState>> {
+            override fun map(src: String): CacheUiPost<RecordCacheState> = when(src) {
+                "Success update cache file" -> CacheUiPost.RecordCacheUiPost.UpdateSuccess(src)
+                "Success writing data to cache" -> CacheUiPost.RecordCacheUiPost.Success(src)
+                else -> throw IllegalArgumentException("RecordUiCacheStringMapper argument $src not found")
             }
         }
     }

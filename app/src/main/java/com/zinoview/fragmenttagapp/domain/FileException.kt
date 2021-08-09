@@ -10,6 +10,6 @@ import java.io.IOException
 
 class FileNotCreatedException : IOException()
 
-class NotCreatedFileException : IOException()
+class FailUpdatedFileException : IOException()
 
 class GenericFileException : IOException()

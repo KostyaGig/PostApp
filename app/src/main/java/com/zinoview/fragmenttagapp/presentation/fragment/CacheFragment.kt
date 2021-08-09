@@ -1,14 +1,15 @@
 package com.zinoview.fragmenttagapp.presentation.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import com.zinoview.fragmenttagapp.R
-import com.zinoview.fragmenttagapp.core.PostApp
+import com.zinoview.fragmenttagapp.core.Check
 import com.zinoview.fragmenttagapp.presentation.ClickedUiPost
 import com.zinoview.fragmenttagapp.presentation.PostTextMapper
+import com.zinoview.fragmenttagapp.presentation.cache.CacheGenerator
+import com.zinoview.fragmenttagapp.presentation.cache.CacheUiPostClicked
 import com.zinoview.fragmenttagapp.presentation.customview.PostTextView
 
 
@@ -19,35 +20,57 @@ import com.zinoview.fragmenttagapp.presentation.customview.PostTextView
 class CacheFragment : BaseFragment() {
 
     private val viewModel by lazy {
-        (requireActivity().application as PostApp).cachePostViewModel
+        application.cachePostViewModel
     }
+
+    private val existingCacheChecker = Check.ExistingCacheCheck()
+    private val recordCacheStateChecker = Check.RecordStateCheck()
+    private val createdCacheFileChecker = Check.CreatedCacheFileCheck()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //todo make different sealed classes for write data and read data (Sealed class RecordCacheData (Success,Fail), ReadCacheData (Success,Fail))
+        //TODO REFACTOR TODOOOOS
+        //todo fixed todo
 
-        //todo after update livedata в independent (зависимости) от силд класса
-        //todo после того,как сделаю сохранение проверять если этот пост уже закеширован,то сказать об этом пользователю
         arguments?.let {
             val clickedUiPost = it.getSerializable(UI_POST_EXTRA) as ClickedUiPost
 
-            val postInfoTextView = view.findViewById<PostTextView>(R.id.post_info_tv)
-            clickedUiPost.map(postInfoTextView)
+            val clickedPostInformation = clickedUiPost.map(PostTextMapper())
 
-            val postTitleTextView = view.findViewById<Button>(R.id.post_title_tv).setOnClickListener {
-                //read
+            val cacheUiPostClicked = CacheUiPostClicked.Base(
+                clickedPostInformation, Check.SameContentCheck(),
+                CacheGenerator.Base(clickedPostInformation)
+            ) // FIXME: 08.08.2021 with application bad resolve
+
+            //region initViews
+            view.findViewById<Button>(R.id.post_title_tv).setOnClickListener {
                 viewModel.cachedData()
             }
-            val postSizeTextView = view.findViewById<Button>(R.id.post_size_tv).setOnClickListener {
-                //write
-                viewModel.writeData(clickedUiPost.map(PostTextMapper()))
+            view.findViewById<Button>(R.id.post_size_tv).setOnClickListener {
+                viewModel.writeData(cacheUiPostClicked)
             }
-            viewModel.observe(this) {
-                Toast.makeText(requireContext(),it,Toast.LENGTH_LONG).show()
-            }
-        }
 
+            val deleteCacheBtn = view.findViewById<Button>(R.id.delete_cached_btn)
+
+            deleteCacheBtn.setOnClickListener {
+                viewModel.updateCache(cacheUiPostClicked)
+            }
+
+            val postInfoTextView = view.findViewById<PostTextView>(R.id.post_info_tv)
+            clickedUiPost.map(postInfoTextView)
+            //endregion
+
+            viewModel.cachedData()
+
+            viewModel.observe(this, { recordCacheState ->
+                recordCacheStateChecker.check(Pair(recordCacheState, deleteCacheBtn))
+            }, { readData ->
+                existingCacheChecker.check(Triple(clickedPostInformation, readData, deleteCacheBtn))
+                createdCacheFileChecker.check(Pair(readData,deleteCacheBtn))
+                Log.d("MyCache", readData)
+            })
+        }
     }
 
     override fun layout(): Int = R.layout.cache_fragment

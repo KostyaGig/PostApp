@@ -1,10 +1,8 @@
 package com.zinoview.fragmenttagapp.presentation
 
-import android.util.Log
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.presentation.customview.ViewMapper
 import java.io.ByteArrayOutputStream
-import java.io.ObjectOutput
 import java.io.ObjectOutputStream
 import java.io.Serializable
 

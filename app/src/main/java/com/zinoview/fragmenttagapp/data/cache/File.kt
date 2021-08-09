@@ -1,9 +1,8 @@
 package com.zinoview.fragmenttagapp.data.cache
 
+import android.util.Log
 import com.zinoview.fragmenttagapp.core.FileProvider
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
+import java.io.*
 
 
 /**
@@ -14,10 +13,11 @@ interface File<T> {
 
     fun write(data: T)
     fun data() : T
+    fun update(newData: String)
 
     class TxtFile(
         private val fileProvider: FileProvider,
-    ) : com.zinoview.fragmenttagapp.data.cache.File<String> {
+    ) : File<String> {
 
         @Throws(Exception::class)
         override fun write(data: String)
@@ -26,5 +26,17 @@ interface File<T> {
         @Throws(FileNotFoundException::class)
         override fun data(): String
             = FileInputStream(fileProvider.file()).bufferedReader().use { it.readText() }
+
+        /**
+         * @param append - false for rewrite file, true for append
+         */
+        @Throws(IOException::class)
+        override fun update(newData: String) {
+            val fos = FileOutputStream(fileProvider.file(),false)
+
+            fos.use {fous ->
+                fous.write(newData.toByteArray())
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.zinoview.fragmenttagapp.presentation
 
-import com.zinoview.fragmenttagapp.presentation.customview.ViewMapper
+import com.zinoview.fragmenttagapp.core.Abstract
 
 
 /**
@@ -9,7 +9,7 @@ import com.zinoview.fragmenttagapp.presentation.customview.ViewMapper
  */
 sealed class PostError(private val message: String) {
 
-    fun map(mapper: ViewMapper) = mapper.map(-1,-1,message,"")
+    fun <T> map(mapper: Abstract.PostMapper<T>) = mapper.map(-1,-1,message,"")
 
     class ServiceUnavailableError(message: String) : PostError(message)
 
