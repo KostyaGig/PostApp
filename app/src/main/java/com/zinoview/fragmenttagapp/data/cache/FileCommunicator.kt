@@ -1,6 +1,5 @@
 package com.zinoview.fragmenttagapp.data.cache
 
-import android.util.Log
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -9,7 +8,7 @@ import java.io.IOException
  * @author Zinoview on 01.08.2021
  * k.gig@list.ru
  */
-interface FileCommunicator : Record<String>, Read<String>, Clean<Unit> {
+interface FileCommunicator : Record<String>, Read<String>, Update<String,Unit> {
 
     class Base(
         private val file: File<String>,
@@ -25,8 +24,8 @@ interface FileCommunicator : Record<String>, Read<String>, Clean<Unit> {
             = file.data()
 
         @Throws(IOException::class)
-        override fun updateFile(newData: String)
-            = file.update(newData)
+        override fun update(src: String)
+            = file.update(src)
     }
 
 }

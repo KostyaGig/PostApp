@@ -1,6 +1,5 @@
 package com.zinoview.fragmenttagapp.data.cache
 
-import android.util.Log
 import com.zinoview.fragmenttagapp.core.FileProvider
 import java.io.*
 

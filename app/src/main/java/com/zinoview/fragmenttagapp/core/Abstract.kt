@@ -11,6 +11,9 @@ import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
 import com.zinoview.fragmenttagapp.presentation.fragment.BaseFragment
 import com.zinoview.fragmenttagapp.presentation.fragment.CacheFragment
 import com.zinoview.fragmenttagapp.presentation.fragment.ListPostFragment
+import com.zinoview.fragmenttagapp.service_locator.cache.CacheModule
+import com.zinoview.fragmenttagapp.service_locator.core.DependencyContainer
+import com.zinoview.fragmenttagapp.service_locator.post.PostModule
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.IllegalArgumentException
@@ -63,7 +66,7 @@ abstract class Abstract {
     interface FactoryMapper<S,R> {
         fun map(src: S) : R
 
-        interface Ui : FactoryMapper<Pair<PostCommunication,PostMapper<UiPost>>,Unit>
+        interface Ui : FactoryMapper<Pair<Communication<List<UiPost>>,PostMapper<UiPost>>,Unit>
 
         class CloudExceptionMapper : FactoryMapper<Exception,IOException> {
             override fun map(src: Exception): IOException = when(src) {

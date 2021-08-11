@@ -2,7 +2,6 @@ package com.zinoview.fragmenttagapp.presentation
 
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.core.Matches
-import com.zinoview.fragmenttagapp.presentation.customview.ViewMapper
 
 
 /**

@@ -4,8 +4,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zinoview.fragmenttagapp.data.cache.Read
+import com.zinoview.fragmenttagapp.data.cache.Record
+import com.zinoview.fragmenttagapp.data.cache.Update
 import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
+import com.zinoview.fragmenttagapp.presentation.Communication
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -14,47 +19,63 @@ import kotlinx.coroutines.withContext
  * @author Zinoview on 01.08.2021
  * k.gig@list.ru
  */
-class CachePostViewModel(
-    private val cachePostInteractor: CachePostInteractor,
-    private val cachePostCommunications: Pair<CachePostCommunication<RecordCacheState>, CachePostCommunication<String>>,
-    private val cacheUiPostMappers: Pair<UiPostCacheMapper<RecordCacheState>, UiPostCacheMapper<String>>
-) : ViewModel() { //todo make interface
 
-    fun writeData(cachedUiPost: CacheUiPostClicked) = viewModelScope.launch(Dispatchers.IO) {
-        val cacheDomainPost = cachedUiPost.writeData(cachePostInteractor)
+interface CachePostViewModel : Record<CacheUiPostClicked>, Read<Job>,  Update<CacheUiPostClicked, Job> {
 
-        val cachePostUi = cacheDomainPost.map(cacheUiPostMappers.first)
+    fun observe(
+        owner: LifecycleOwner, cacheRecordObserver: Observer<RecordCacheState>,
+        cacheReadObserver: Observer<String>
+    )
 
-        withContext(Dispatchers.Main) {
-            cachePostUi.map(cachePostCommunications.first)
+    class Base(
+        private val cachePostInteractor: CachePostInteractor,
+        private val cachePostCommunications:
+        Pair<Communication<RecordCacheState>, Communication<String>>,
+        private val cacheUiPostMappers:
+        Pair<UiPostCacheMapper<RecordCacheState>, UiPostCacheMapper<String>>
+    ) : ViewModel(), CachePostViewModel {
+
+        override fun writeData(data: CacheUiPostClicked) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val cacheDomainPost = data.writeData()
+
+                val cachePostUi = cacheDomainPost.map(cacheUiPostMappers.first)
+
+                withContext(Dispatchers.Main) {
+                    cachePostUi.map(cachePostCommunications.first)
+                }
+            }
+        }
+
+        override fun data() = viewModelScope.launch(Dispatchers.IO) {
+            val cacheDomainPost = cachePostInteractor.readData()
+            val cachePostUi = cacheDomainPost.map(cacheUiPostMappers.second)
+
+            withContext(Dispatchers.Main) {
+                cachePostUi.map(cachePostCommunications.second)
+            }
+        }
+
+        override fun update(src: CacheUiPostClicked) = viewModelScope.launch(Dispatchers.IO) {
+            val resultDomainUpdateCache = src.updateFile()
+
+            val resultUiUpdateCache = resultDomainUpdateCache.map(cacheUiPostMappers.first)
+
+            withContext(Dispatchers.Main) {
+                resultUiUpdateCache.map(cachePostCommunications.first)
+            }
+        }
+
+
+        override fun observe(
+            owner: LifecycleOwner,
+            cacheRecordObserver: Observer<RecordCacheState>,
+            cacheReadObserver: Observer<String>
+        ) {
+            with(cachePostCommunications) {
+                first.observe(owner, cacheRecordObserver)
+                second.observe(owner, cacheReadObserver)
+            }
         }
     }
-
-    fun cachedData() = viewModelScope.launch(Dispatchers.IO) {
-        val cacheDomainPost = cachePostInteractor.readData()
-        val cachePostUi = cacheDomainPost.map(cacheUiPostMappers.second)
-
-        withContext(Dispatchers.Main) {
-            cachePostUi.map(cachePostCommunications.second)
-        }
-    }
-
-    fun updateCache(cachedUiPost: CacheUiPostClicked) = viewModelScope.launch(Dispatchers.IO) {
-        val resultDomainUpdateCache = cachedUiPost.updateFile(cachePostInteractor)
-
-        val resultUiUpdateCache = resultDomainUpdateCache.map(cacheUiPostMappers.first)
-
-        withContext(Dispatchers.Main) {
-            resultUiUpdateCache.map(cachePostCommunications.first)
-        }
-    }
-
-
-    fun observe(owner: LifecycleOwner, cacheRecordObserver: Observer<RecordCacheState>, cacheReadObserver: Observer<String>) {
-        with(cachePostCommunications) {
-            first.observe(owner, cacheRecordObserver)
-            second.observe(owner, cacheReadObserver)
-        }
-    }
-
 }

@@ -13,7 +13,7 @@ import com.zinoview.fragmenttagapp.core.Abstract
 class BodyTextView(
     context: Context,attributes: AttributeSet?
 ) : AppCompatTextView(context,attributes),
-    ViewMapper {
+    ViewMapper<Unit> {
 
     override fun map(postId: Int,userId: Int,body: String, title: String) = setText(body)
 

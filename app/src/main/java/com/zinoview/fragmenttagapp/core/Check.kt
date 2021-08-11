@@ -1,18 +1,18 @@
 package com.zinoview.fragmenttagapp.core
 
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.zinoview.fragmenttagapp.R
 import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
-
 
 /**
  * @author Zinoview on 30.07.2021
  * k.gig@list.ru
  * Bad class
  */
-@Deprecated("Use Matches interface")
+//todo transform Button to Interface
+
 interface Check<T : Any?> {
 
     fun check(arg: T) : Boolean
@@ -21,18 +21,21 @@ interface Check<T : Any?> {
         override fun check(arg: Fragment?): Boolean = arg == null
     }
 
-    class ExistingCacheCheck: Check<Triple<String,String,Button>> {
-        override fun check(arg: Triple<String,String, Button>): Boolean {
+    class ExistingCacheCheck: Check<Triple<String,String,com.zinoview.fragmenttagapp.presentation.customview.Button>> {
+
+        override fun check(arg: Triple<String,String,com.zinoview.fragmenttagapp.presentation.customview.Button>): Boolean {
             val clickedUiPostText = arg.first
-            val cacheUiPostText = arg.second
-            if (isNotEmptyCacheCheck(cacheUiPostText)) {
-                if (checkContainsCache(clickedUiPostText,cacheUiPostText)) {
-                    arg.third.visibility = View.VISIBLE
+            val currentCache = arg.second
+            val deleteCacheBtn = arg.third
+
+            if (isNotEmptyCacheCheck(currentCache)) {
+                if (checkContainsCache(clickedUiPostText,currentCache)) {
+                    deleteCacheBtn.changeVisible(View.VISIBLE)
                 } else {
-                    arg.third.visibility = View.GONE
+                    deleteCacheBtn.changeVisible(View.GONE)
                 }
             } else {
-                arg.third.visibility = View.GONE
+                deleteCacheBtn.changeVisible(View.GONE)
             }
             return false
         }
@@ -43,15 +46,8 @@ interface Check<T : Any?> {
             = cacheUiPostText.contains(clickedUiPostText)
     }
 
-    class SameContentCheck : Check<Pair<String,String>> {
-
-        override fun check(arg: Pair<String, String>): Boolean
-            = arg.first.contains(arg.second)
-    }
-
-    class RecordStateCheck : Check<Pair<RecordCacheState,Button>> {
-
-        override fun check(arg: Pair<RecordCacheState, Button>): Boolean {
+    class RecordStateCheck : Check<Pair<RecordCacheState,com.zinoview.fragmenttagapp.presentation.customview.Button>> {
+        override fun check(arg: Pair<RecordCacheState, com.zinoview.fragmenttagapp.presentation.customview.Button>): Boolean {
 
             val currentRecordCacheState = arg.first
             val deleteCacheButton = arg.second
@@ -59,48 +55,48 @@ interface Check<T : Any?> {
             when (arg.first) {
                 is RecordCacheState.Success -> {
                     showMessage(currentRecordCacheState,deleteCacheButton)
-                    showButton(View.VISIBLE,deleteCacheButton)
+                    deleteCacheButton.changeVisible(View.VISIBLE)
                 }
                 is RecordCacheState.UpdateSuccess -> {
                     showMessage(currentRecordCacheState,deleteCacheButton)
-                    showButton(View.GONE,deleteCacheButton)
+                    deleteCacheButton.changeVisible(View.GONE)
                 }
                 is RecordCacheState.Fail -> {
                     showMessage(currentRecordCacheState,deleteCacheButton)
-                    showButton(View.GONE,deleteCacheButton)
+                    deleteCacheButton.changeVisible(View.GONE)
                 }
             }
             return false
         }
 
-        private fun showMessage(recordCacheState: RecordCacheState,button: Button)
+        private fun showMessage(recordCacheState: RecordCacheState,button: com.zinoview.fragmenttagapp.presentation.customview.Button)
             = recordCacheState.map(button)
 
-        private fun showButton(visibility: Int,button: Button) {
-            button.visibility = visibility
-        }
     }
 
-    class CreatedCacheFileCheck : Check<Pair<String,Button>> {
+    class CreatedCacheFileCheck(
+        private val resource: Resource
+    ) : Check<Pair<String, com.zinoview.fragmenttagapp.presentation.customview.Button>> {
 
-        override fun check(arg: Pair<String, Button>): Boolean {
+        override fun check(arg: Pair<String, com.zinoview.fragmenttagapp.presentation.customview.Button>): Boolean {
             val cacheReadText = arg.first
-            //use button for getting context
-            val context = arg.second.context
+
+            val context = arg.second.map(-1,-1,"","")
 
             if (sameText(cacheReadText)) {
-                Toast.makeText(context, CACHE_POST_TEXT,Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, resource.string(R.string.cache_first_post_text),Toast.LENGTH_SHORT).show()
             }
 
             return false
         }
 
         private fun sameText(text: String) : Boolean
-            = text == FILE_NOT_CREATED_TEXT // todo use resource
+            = text == resource.string(R.string.not_created_file_message)
+    }
 
-        private companion object {
-            const val FILE_NOT_CREATED_TEXT = "File yet not created"
-            const val CACHE_POST_TEXT = "Please cache you first post!"
-        }
+    class SameContentCheck : Check<Pair<String,String>> {
+
+        override fun check(arg: Pair<String, String>): Boolean
+            = arg.first.contains(arg.second)
     }
 }

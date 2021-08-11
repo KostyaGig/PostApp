@@ -17,20 +17,19 @@ interface CachePostInteractor {
 
     class Base(
         private val cachePostRepository: CachePostRepository,
-        private val cacheRecordDomainMapper: PostRecordDomainCacheMapper,
-        private val cacheReadDomainMapper: PostReadDomainCacheMapper
+        private val postDomainCacheMappers: Pair<PostDomainCacheMapper<RecordCacheState>,PostDomainCacheMapper<String>>,
     ) : CachePostInteractor {
 
         override suspend fun writeData(data: String): CacheDomainPost<RecordCacheState>
-            = cachePostRepository.writeData(data).map(cacheRecordDomainMapper)
+            = cachePostRepository.writeData(data).map(postDomainCacheMappers.first)
 
         override suspend fun readData(): CacheDomainPost<String>
-            = cachePostRepository.data().map(cacheReadDomainMapper)
+            = cachePostRepository.data().map(postDomainCacheMappers.second)
 
         override suspend fun commonData(): String
             = cachePostRepository.commonData()
 
         override suspend fun updateFile(newCache: String) : CacheDomainPost<RecordCacheState>
-            = cachePostRepository.updateFile(newCache).map(cacheRecordDomainMapper)
+            = cachePostRepository.updateFile(newCache).map(postDomainCacheMappers.first)
     }
 }

@@ -33,15 +33,15 @@
         android:text="Write"
         />
 
-    <Button
+    <com.zinoview.fragmenttagapp.presentation.customview.PostButton
         android:id="@+id/delete_cached_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_10dp"
         android:text="Delete from cache"
-        android:background="@android:color/holo_red_dark"
         android:backgroundTint="@android:color/holo_red_dark"
         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+        android:textColor="@android:color/white"
         android:visibility="gone"
         />
 

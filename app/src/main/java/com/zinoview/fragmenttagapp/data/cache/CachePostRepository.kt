@@ -44,8 +44,8 @@ interface CachePostRepository {
             = fileCommunicator.data()
 
         override suspend fun updateFile(newCache: String): CacheDataPost<RecordCacheState> = try {
-            fileCommunicator.updateFile(newCache)
-            CacheDataPost.RecordCacheDataPost.UpdateSuccess(resource.string(R.string.success_updating_cache_file)) //todo use resource
+            fileCommunicator.update(newCache)
+            CacheDataPost.RecordCacheDataPost.UpdateSuccess(resource.string(R.string.success_updating_cache_file))
         } catch (e: IOException) {
             CacheDataPost.RecordCacheDataPost.Fail(FailUpdatedFileException())
         }

@@ -1,10 +1,8 @@
 package com.zinoview.fragmenttagapp.presentation.cache
 
-import android.util.Log
+import com.zinoview.fragmenttagapp.R
 import com.zinoview.fragmenttagapp.core.Check
-import com.zinoview.fragmenttagapp.data.cache.CachePostRepository
-import com.zinoview.fragmenttagapp.data.cache.FileCommunicator
-import com.zinoview.fragmenttagapp.domain.PostInteractor
+import com.zinoview.fragmenttagapp.core.Resource
 import com.zinoview.fragmenttagapp.domain.cache.CacheDomainPost
 import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
 
@@ -14,34 +12,35 @@ import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
  */
 interface CacheUiPostClicked {
 
-    suspend fun updateFile(interactor: CachePostInteractor): CacheDomainPost<RecordCacheState>
-    suspend fun writeData(interactor: CachePostInteractor) : CacheDomainPost<RecordCacheState>
+    suspend fun updateFile() : CacheDomainPost<RecordCacheState>
+    suspend fun writeData() : CacheDomainPost<RecordCacheState>
 
     class Base(
         private val cacheUiPostClicked: String,
         private val checker: Check<Pair<String, String>>,
-        private val cacheGenerator: CacheGenerator
+        private val cacheGenerator: CacheGenerator,
+        private val cachePostInteractor: CachePostInteractor,
+        private val resource: Resource
     ) : CacheUiPostClicked {
 
-        //todo move interactor to constructor (DRY)
 
-        override suspend fun updateFile(interactor: CachePostInteractor): CacheDomainPost<RecordCacheState> {
-            val newCache = cacheGenerator.generate(interactor.commonData())
-            return interactor.updateFile(newCache)
+        override suspend fun updateFile(): CacheDomainPost<RecordCacheState> {
+            val newCache = cacheGenerator.generate(cachePostInteractor.commonData())
+            return cachePostInteractor.updateFile(newCache)
         }
 
-        override suspend fun writeData(interactor: CachePostInteractor) : CacheDomainPost<RecordCacheState> {
-            val currentCache = interactor.commonData()
-            val sameStrings = Pair(currentCache,cacheUiPostClicked)
-            return if (samePartOfCacheCheck(sameStrings).not()) {
-                interactor.writeData(cacheUiPostClicked)
+        override suspend fun writeData() : CacheDomainPost<RecordCacheState> {
+            val currentCache = cachePostInteractor.commonData()
+            val sameCache = Pair(currentCache,cacheUiPostClicked)
+            return if (samePartOfCacheCheck(sameCache).not()) {
+                cachePostInteractor.writeData(cacheUiPostClicked)
             } else {
-                CacheDomainPost.RecordCacheDomainPost.Success("This is post already exist") //todo use resourceProvider
+                CacheDomainPost.RecordCacheDomainPost.Success(resource.string(R.string.existing_post_text))
             }
         }
 
         private fun samePartOfCacheCheck(samesString: Pair<String,String>) : Boolean
             = checker.check(samesString)
-
     }
+
 }

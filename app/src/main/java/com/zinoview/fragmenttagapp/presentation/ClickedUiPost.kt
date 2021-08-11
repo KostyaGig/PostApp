@@ -20,7 +20,7 @@ data class ClickedUiPost(
     private val title: String
 ) : Serializable, Abstract.Object {
 
-    fun map(mapper: ViewMapper) = mapper.map(postId, this.bytes().size, body, title)
+    fun map(mapper: ViewMapper<Unit>) = mapper.map(postId, this.bytes().size, body, title)
 
     override fun <T> map(mapper: Abstract.PostMapper<T>): T
         = mapper.map(postId,userId,title,body)

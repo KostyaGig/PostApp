@@ -12,7 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView
 class PostTextView(
     context: Context,attributes: AttributeSet?
 ) : AppCompatTextView(context,attributes),
-    ViewMapper {
+    ViewMapper<Unit> {
 
     override fun map(postId: Int,userId: Int,body: String, title: String) = setText(
         giveInfoPost(postId, userId, body, title)

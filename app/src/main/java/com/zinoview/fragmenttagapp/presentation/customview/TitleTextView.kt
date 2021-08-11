@@ -12,7 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView
 class TitleTextView(
     context: Context,attributes: AttributeSet?
 ) : AppCompatTextView(context,attributes),
-    ViewMapper {
+    ViewMapper<Unit> {
 
     override fun map(postId: Int,userId: Int,body: String, title: String) = setText(title)
 }
