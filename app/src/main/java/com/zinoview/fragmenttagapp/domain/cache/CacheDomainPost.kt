@@ -1,7 +1,6 @@
 package com.zinoview.fragmenttagapp.domain.cache
 
 import com.zinoview.fragmenttagapp.core.Abstract
-import com.zinoview.fragmenttagapp.data.cache.CacheDataPost
 import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
 import java.io.IOException
 

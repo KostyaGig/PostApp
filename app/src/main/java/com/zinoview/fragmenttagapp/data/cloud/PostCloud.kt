@@ -1,6 +1,5 @@
 package com.zinoview.fragmenttagapp.data.cloud
 
-import androidx.lifecycle.ViewModel
 import com.google.gson.annotations.SerializedName
 import com.zinoview.fragmenttagapp.core.Abstract
 

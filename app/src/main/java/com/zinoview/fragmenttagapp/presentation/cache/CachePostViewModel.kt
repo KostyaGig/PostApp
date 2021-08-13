@@ -20,7 +20,8 @@ import kotlinx.coroutines.withContext
  * k.gig@list.ru
  */
 
-interface CachePostViewModel : Record<CacheUiPostClicked>, Read<Job>,  Update<CacheUiPostClicked, Job> {
+interface CachePostViewModel : Record<CacheUiPostClicked>, Read<Job>,
+    Update<CacheUiPostClicked, Job> {
 
     fun observe(
         owner: LifecycleOwner, cacheRecordObserver: Observer<RecordCacheState>,

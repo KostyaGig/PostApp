@@ -1,12 +1,15 @@
 package com.zinoview.fragmenttagapp.presentation.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.zinoview.fragmenttagapp.R
-import com.zinoview.fragmenttagapp.core.Abstract
-import com.zinoview.fragmenttagapp.presentation.*
+import com.zinoview.fragmenttagapp.core.FragmentManager
+import com.zinoview.fragmenttagapp.presentation.post.ClickedUiPostMapper
+import com.zinoview.fragmenttagapp.presentation.post.PostAdapter
+import com.zinoview.fragmenttagapp.presentation.post.PostItemListener
+import com.zinoview.fragmenttagapp.presentation.post.UiPost
 
 
 /**
@@ -16,41 +19,49 @@ import com.zinoview.fragmenttagapp.presentation.*
 
 class ListPostFragment : BaseFragment() {
 
-    private val viewModel by lazy {
+    private val postViewModel by lazy {
         application.viewModel(application.postModule)
+    }
+
+    private val navigationViewModel by lazy {
+        application.viewModel(application.navigationModule)
+    }
+
+    private val bundleGenerator by lazy {
+        application.generator.bundleGenerator
+    }
+
+    private val fragmentManager by lazy {
+        FragmentManager.Base(requireActivity() as AppCompatActivity)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel.data()
+        postViewModel.data()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("MainActivity","ListPostFragment onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
 
-         val adapter = PostAdapter(Abstract.FactoryMapper.RecyclerViewTypeMapper(), object : PostItemListener {
+         val adapter = PostAdapter(application.mapper.recyclerViewTypeMapper, object : PostItemListener {
             override fun onItemClick(uiPost: UiPost) {
                 val clickedUiPost = uiPost.map(ClickedUiPostMapper())
-                val cacheFragment = CacheFragment()
 
-                cacheFragment.arguments = Bundle().apply {
-                    putSerializable(UI_POST_EXTRA, clickedUiPost)
-                }
-
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.container,cacheFragment)
-                    addToBackStack(null)
-                    commit()
-                }
+                navigationViewModel.navigate(
+                    fragmentManager,
+                    bundleGenerator.generate(
+                        Pair(
+                            UI_POST_EXTRA,
+                            clickedUiPost)
+                    ))
             }
         })
+
         recyclerView.adapter = adapter
 
-        viewModel.observe(viewLifecycleOwner) { uiPosts ->
+        postViewModel.observe(viewLifecycleOwner) { uiPosts ->
                 adapter.updateList(uiPosts)
             }
         }

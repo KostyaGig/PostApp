@@ -11,15 +11,10 @@ import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
  * k.gig@list.ru
  * Bad class
  */
-//todo transform Button to Interface
 
 interface Check<T : Any?> {
 
     fun check(arg: T) : Boolean
-
-    class NullCheck : Check<Fragment?> {
-        override fun check(arg: Fragment?): Boolean = arg == null
-    }
 
     class ExistingCacheCheck: Check<Triple<String,String,com.zinoview.fragmenttagapp.presentation.customview.Button>> {
 

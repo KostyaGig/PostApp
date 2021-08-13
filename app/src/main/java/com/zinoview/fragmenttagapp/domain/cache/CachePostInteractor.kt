@@ -17,7 +17,7 @@ interface CachePostInteractor {
 
     class Base(
         private val cachePostRepository: CachePostRepository,
-        private val postDomainCacheMappers: Pair<PostDomainCacheMapper<RecordCacheState>,PostDomainCacheMapper<String>>,
+        private val postDomainCacheMappers: Pair<PostDomainCacheMapper<RecordCacheState>, PostDomainCacheMapper<String>>,
     ) : CachePostInteractor {
 
         override suspend fun writeData(data: String): CacheDomainPost<RecordCacheState>

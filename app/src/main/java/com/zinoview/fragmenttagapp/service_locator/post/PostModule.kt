@@ -1,6 +1,6 @@
 package com.zinoview.fragmenttagapp.service_locator.post
 
-import com.zinoview.fragmenttagapp.presentation.PostViewModel
+import com.zinoview.fragmenttagapp.presentation.post.PostViewModel
 import com.zinoview.fragmenttagapp.service_locator.core.BaseModule
 import com.zinoview.fragmenttagapp.service_locator.core.DependencyContainer
 
@@ -10,7 +10,6 @@ import com.zinoview.fragmenttagapp.service_locator.core.DependencyContainer
  * k.gig@list.ru
  */
 
-//todo make for PostViewModel and CachePostViewModel abstract viewwmodel, whick should be extends от ViewModel,for DIP
 class PostModule(
     private val dependencyContainer: DependencyContainer.Post
 ) : BaseModule<PostViewModel.Base> {
@@ -20,7 +19,6 @@ class PostModule(
             dependencyContainer.postInteractor,
             dependencyContainer.cachePostInteractor,
             dependencyContainer.listPostUiMapper,
-            dependencyContainer.modelNavigator,
-            dependencyContainer.communicate
+            dependencyContainer.communicate,
         )
 }

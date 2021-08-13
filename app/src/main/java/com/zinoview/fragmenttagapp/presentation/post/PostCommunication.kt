@@ -1,9 +1,10 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.zinoview.fragmenttagapp.presentation.Communication
 
 
 /**

@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">FragmentTagApp</string>
+    <string name="app_name">Post app</string>
     <string name="no_connection_message">No connection</string>
     <string name="service_unavailable_message">Sorry, service unavailable</string>
-    <string name="some_went_wrong_message">Some went wrong...</string>
+    <string name="some_went_wrong_message">Some went wrong…</string>
     <string name="posts_string">Posts</string>
     <string name="cache_string">Cache</string>
     <string name="error_creat_file_message">Error in creating file</string>
@@ -12,4 +12,5 @@
     <string name="success_updating_cache_file">Success update cache file</string>
     <string name="cache_first_post_text">Please cache you first post!</string>
     <string name="existing_post_text">This is post already exist</string>
+    <string name="post_info_text">Detailed info post</string>
 </resources>

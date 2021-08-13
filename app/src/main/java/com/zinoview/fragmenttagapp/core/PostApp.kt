@@ -1,12 +1,14 @@
 package com.zinoview.fragmenttagapp.core
 
 import android.app.Application
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import com.zinoview.fragmenttagapp.presentation.UiPost
+import com.zinoview.fragmenttagapp.presentation.Generator
 import com.zinoview.fragmenttagapp.presentation.cache.*
 import com.zinoview.fragmenttagapp.service_locator.cache.CacheModule
 import com.zinoview.fragmenttagapp.service_locator.core.BaseModule
 import com.zinoview.fragmenttagapp.service_locator.core.DependencyContainer
+import com.zinoview.fragmenttagapp.service_locator.navigation.NavigationModule
 import com.zinoview.fragmenttagapp.service_locator.post.PostModule
 
 /**
@@ -17,8 +19,11 @@ class PostApp : Application() {
 
     lateinit var cacheModule: CacheModule
     lateinit var postModule: PostModule
+    lateinit var navigationModule: NavigationModule
 
-    lateinit var checkerDependencyContainer: DependencyContainer.Checker
+    lateinit var checker: DependencyContainer.Checker
+    lateinit var mapper: DependencyContainer.Mapper
+    lateinit var generator: DependencyContainer.Generator
 
     override fun onCreate() {
         super.onCreate()
@@ -27,10 +32,13 @@ class PostApp : Application() {
         val cache = DependencyContainer.Cache(core)
         val network = DependencyContainer.Network()
         val post = DependencyContainer.Post(network, cache, core)
-        checkerDependencyContainer = DependencyContainer.Checker(core,cache)
+        val navigation = DependencyContainer.Navigation(core)
+        checker = DependencyContainer.Checker(core,cache)
+        mapper = DependencyContainer.Mapper()
+        generator = DependencyContainer.Generator()
 
         val dependencyContainers = listOf(
-            core,cache,network,post,checkerDependencyContainer
+            core,cache,network,post,navigation,checker,mapper,generator
         )
 
         for (dependencyContainer in dependencyContainers) {
@@ -39,7 +47,7 @@ class PostApp : Application() {
 
         cacheModule = CacheModule(cache)
         postModule = PostModule(post)
-
+        navigationModule = NavigationModule(navigation)
     }
 
     fun <T : ViewModel> viewModel(module: BaseModule<T>) : T = module.getViewModel()
@@ -47,10 +55,11 @@ class PostApp : Application() {
     fun cacheUiPostClicked(cache: String) : CacheUiPostClicked
         = CacheUiPostClicked.Base(
             cache,
-            checkerDependencyContainer.sameContentCheck,
-            CacheGenerator.Base(cache),
-            checkerDependencyContainer.cachePostInteractor,
-            checkerDependencyContainer.resource
+            checker.sameContentCheck,
+            Generator.Cache(cache),
+            checker.cachePostInteractor,
+            checker.resource
         )
 
+    fun string(@StringRes idRes: Int) : String = checker.resource.string(idRes)
 }

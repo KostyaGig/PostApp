@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
-
 /**
  * @author Zinoview on 10.08.2021
  * k.gig@list.ru

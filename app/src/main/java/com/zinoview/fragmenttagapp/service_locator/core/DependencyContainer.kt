@@ -1,31 +1,33 @@
 package com.zinoview.fragmenttagapp.service_locator.core
 
 import android.content.Context
+import android.os.Bundle
+import android.view.MenuItem
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.core.Check
 import com.zinoview.fragmenttagapp.core.FileProvider
 import com.zinoview.fragmenttagapp.core.Resource
-import com.zinoview.fragmenttagapp.data.PostRepository
+import com.zinoview.fragmenttagapp.data.cache.CacheExceptionMapper
 import com.zinoview.fragmenttagapp.data.cache.CachePostRepository
 import com.zinoview.fragmenttagapp.data.cache.File
 import com.zinoview.fragmenttagapp.data.cache.FileCommunicator
-import com.zinoview.fragmenttagapp.data.cloud.PostCloudDataSource
-import com.zinoview.fragmenttagapp.data.cloud.PostDataMapper
-import com.zinoview.fragmenttagapp.data.cloud.PostService
-import com.zinoview.fragmenttagapp.domain.ListPostDomainMapper
-import com.zinoview.fragmenttagapp.domain.PostDomain
-import com.zinoview.fragmenttagapp.domain.PostDomainMapper
-import com.zinoview.fragmenttagapp.domain.PostInteractor
+import com.zinoview.fragmenttagapp.data.cloud.*
+import com.zinoview.fragmenttagapp.domain.*
 import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
 import com.zinoview.fragmenttagapp.domain.cache.PostDomainCacheMapper
+import com.zinoview.fragmenttagapp.domain.cache.RecordDomainCacheStringMapper
 import com.zinoview.fragmenttagapp.presentation.*
 import com.zinoview.fragmenttagapp.presentation.cache.*
-import com.zinoview.fragmenttagapp.presentation.navigation.ModelNavigator
+import com.zinoview.fragmenttagapp.presentation.navigation.Navigator
+import com.zinoview.fragmenttagapp.presentation.navigation.TitleToolbarCommuncation
+import com.zinoview.fragmenttagapp.presentation.navigation.TypeFragmentNavigator
+import com.zinoview.fragmenttagapp.presentation.post.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.io.Serializable
 
 
 /**
@@ -80,16 +82,15 @@ interface DependencyContainer {
         private val core: Core
     ) : DependencyContainer {
 
-        lateinit var postRepository: PostRepository
+        lateinit var postRepository: PostCloudRepository
         lateinit var postInteractor: PostInteractor
 
         lateinit var cachePostInteractor: CachePostInteractor
         lateinit var listPostUiMapper: Abstract.ListPostMapper<PostDomain, ListPostUi, IOException>
-        lateinit var modelNavigator: ModelNavigator
         lateinit var communicate: Pair<Communication<List<UiPost>>,Abstract.PostMapper<UiPost>>
 
         override fun init(context: Context) {
-            postRepository = PostRepository.Base(
+            postRepository = PostCloudRepository.Base(
                 network.postCloudDataSource,
                 PostDataMapper()
             )
@@ -98,7 +99,7 @@ interface DependencyContainer {
                 postRepository,
                 ListPostDomainMapper(
                     PostDomainMapper(),
-                    Abstract.FactoryMapper.CloudExceptionMapper()
+                    CloudExceptionMapper()
                 )
             )
 
@@ -106,13 +107,12 @@ interface DependencyContainer {
 
             listPostUiMapper = ListPostUiMapper(
                 PostUiMapper(),
-                Abstract.FactoryMapper.IOExceptionMapper(core.resource)
+                IOExceptionMapper(core.resource)
             )
 
-            modelNavigator = ModelNavigator.Base(Check.NullCheck())
-
             val postCommunication = PostCommunication()
-            communicate = Pair(postCommunication,UiPostMapper())
+            communicate = Pair(postCommunication, UiPostMapper())
+
         }
     }
 
@@ -141,14 +141,14 @@ interface DependencyContainer {
                 core.resource
             )
 
-            val cacheExceptionMapper = Abstract.FactoryMapper.CacheExceptionMapper()
+            val cacheExceptionMapper = CacheExceptionMapper()
 
             cachePostInteractor = CachePostInteractor.Base(
                 cachePostRepository,
                 Pair(
                     PostDomainCacheMapper.Record(
                         cacheExceptionMapper,
-                        Abstract.FactoryMapper.RecordDomainCacheStringMapper()
+                        RecordDomainCacheStringMapper(core.resource)
                     ),
                     PostDomainCacheMapper.Read(cacheExceptionMapper)
                 )
@@ -159,16 +159,30 @@ interface DependencyContainer {
                 CacheReadPostCommunication()
             )
 
-            val ioExceptionMapper = Abstract.FactoryMapper.CacheErrorMessageMapper(core.resource)
+            val ioExceptionMapper = CacheErrorMessageMapper(core.resource)
 
             uiPostCacheMappers = Pair(
                 UiPostCacheMapper.Record(
                     ioExceptionMapper,
-                    Abstract.FactoryMapper.RecordUiCacheStringMapper()
+                    RecordUiCacheStringMapper(core.resource)
                 ),
                 UiPostCacheMapper.Read(ioExceptionMapper)
             )
         }
+    }
+
+    class Navigation(
+        private val core: Core
+    ) : DependencyContainer {
+        lateinit var navigator: Navigator
+        lateinit var communication: Communication<String>
+
+        override fun init(context: Context) {
+
+            communication = TitleToolbarCommuncation()
+            navigator = Navigator.Base(communication,core.resource)
+        }
+
     }
 
     class Checker(
@@ -202,7 +216,29 @@ interface DependencyContainer {
 
             cachePostInteractor = cache.cachePostInteractor
         }
-
     }
 
+    class Mapper : DependencyContainer {
+
+        lateinit var postMapper: Abstract.PostMapper<String>
+        lateinit var menuItemIdMapper: Abstract.FactoryMapper<MenuItem,TypeFragmentNavigator>
+        lateinit var recyclerViewTypeMapper: Abstract.FactoryMapper<UiPost, Int>
+
+        override fun init(context: Context) {
+            postMapper = PostTextMapper()
+            menuItemIdMapper = MenuItemIdMapper()
+            recyclerViewTypeMapper = RecyclerViewTypeMapper()
+        }
+    }
+
+    class Generator : DependencyContainer {
+
+        lateinit var bundleGenerator
+            : com.zinoview.fragmenttagapp.presentation.Generator<Pair<String, Serializable>, Bundle>
+
+        override fun init(context: Context) {
+            bundleGenerator = com.zinoview.fragmenttagapp.presentation.Generator.Bundle()
+        }
+
+    }
 }

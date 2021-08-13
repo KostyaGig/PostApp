@@ -2,7 +2,7 @@ package com.zinoview.fragmenttagapp.domain
 
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.data.PostData
-import com.zinoview.fragmenttagapp.data.PostRepository
+import com.zinoview.fragmenttagapp.data.cloud.PostCloudRepository
 import java.lang.Exception
 
 
@@ -15,7 +15,7 @@ interface PostInteractor {
     suspend fun listPostDomain() : ListPostDomain
 
     class Base(
-        private val postRepository: PostRepository,
+        private val postRepository: PostCloudRepository,
         private val postDomainMapper: Abstract.ListPostMapper<PostData, ListPostDomain, Exception>
     ) : PostInteractor {
         override suspend fun listPostDomain(): ListPostDomain {

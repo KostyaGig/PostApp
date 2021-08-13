@@ -1,7 +1,6 @@
 package com.zinoview.fragmenttagapp.data
 
 import com.zinoview.fragmenttagapp.core.Abstract
-import com.zinoview.fragmenttagapp.domain.PostDomain
 
 
 /**

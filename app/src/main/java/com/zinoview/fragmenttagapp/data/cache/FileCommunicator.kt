@@ -8,7 +8,7 @@ import java.io.IOException
  * @author Zinoview on 01.08.2021
  * k.gig@list.ru
  */
-interface FileCommunicator : Record<String>, Read<String>, Update<String,Unit> {
+interface FileCommunicator : Record<String>, Read<String>, Update<String, Unit> {
 
     class Base(
         private val file: File<String>,

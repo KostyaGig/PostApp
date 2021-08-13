@@ -1,4 +1,4 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import com.zinoview.fragmenttagapp.core.Abstract
 
@@ -9,5 +9,5 @@ import com.zinoview.fragmenttagapp.core.Abstract
  */
 class UiPostMapper : Abstract.PostMapper<UiPost> {
     override fun map(id: Int, userId: Int, title: String, body: String): UiPost
-        = UiPost.Base(id,userId,body,title)
+        = UiPost.Base(id, userId, body, title)
 }

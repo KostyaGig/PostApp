@@ -1,4 +1,4 @@
-package com.zinoview.fragmenttagapp.domain
+package com.zinoview.fragmenttagapp.domain.cache
 
 import java.io.IOException
 

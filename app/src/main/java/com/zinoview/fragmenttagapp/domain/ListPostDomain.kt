@@ -1,7 +1,7 @@
 package com.zinoview.fragmenttagapp.domain
 
 import com.zinoview.fragmenttagapp.core.Abstract
-import com.zinoview.fragmenttagapp.presentation.ListPostUi
+import com.zinoview.fragmenttagapp.presentation.post.ListPostUi
 import java.io.IOException
 
 

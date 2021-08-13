@@ -1,4 +1,4 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.domain.PostDomain
@@ -11,8 +11,8 @@ import java.io.IOException
  */
 class ListPostUiMapper(
     private val postUiMapper: Abstract.PostMapper<PostUi>,
-    private val ioExMapper: Abstract.FactoryMapper<IOException,PostError>
-) : Abstract.ListPostMapper<PostDomain,ListPostUi,IOException> {
+    private val ioExMapper: Abstract.FactoryMapper<IOException, PostError>
+) : Abstract.ListPostMapper<PostDomain, ListPostUi,IOException> {
 
     override fun map(list: List<PostDomain>): ListPostUi {
         val postsUi = list.map { it.map(postUiMapper) }

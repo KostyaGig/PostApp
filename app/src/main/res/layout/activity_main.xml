@@ -6,8 +6,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".MainActivity"
+    tools:context=".presentation.MainActivity"
     android:weightSum="5">
+
+    <com.zinoview.fragmenttagapp.presentation.customview.PostToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/app_name"
+        android:background="@color/design_default_color_primary"
+        app:titleTextColor="@android:color/white"/>
 
     <FrameLayout
         android:id="@+id/container"

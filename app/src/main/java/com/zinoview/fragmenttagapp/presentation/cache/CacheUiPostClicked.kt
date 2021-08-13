@@ -5,6 +5,7 @@ import com.zinoview.fragmenttagapp.core.Check
 import com.zinoview.fragmenttagapp.core.Resource
 import com.zinoview.fragmenttagapp.domain.cache.CacheDomainPost
 import com.zinoview.fragmenttagapp.domain.cache.CachePostInteractor
+import com.zinoview.fragmenttagapp.presentation.Generator
 
 /**
  * @author Zinoview on 08.08.2021
@@ -18,7 +19,7 @@ interface CacheUiPostClicked {
     class Base(
         private val cacheUiPostClicked: String,
         private val checker: Check<Pair<String, String>>,
-        private val cacheGenerator: CacheGenerator,
+        private val cacheGenerator: Generator<String, String>,
         private val cachePostInteractor: CachePostInteractor,
         private val resource: Resource
     ) : CacheUiPostClicked {

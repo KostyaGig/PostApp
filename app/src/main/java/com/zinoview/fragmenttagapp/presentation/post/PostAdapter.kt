@@ -1,4 +1,4 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import android.view.LayoutInflater
 import android.view.View
@@ -31,8 +31,14 @@ class PostAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder = when(viewType) {
         0 -> PostViewHolder.Progress(R.layout.progress_item_view.makeView(parent))
-        1 -> PostViewHolder.BasePostViewHolder.Base(R.layout.post_item_view.makeView(parent),postItemListener)
-        2 -> PostViewHolder.BasePostViewHolder.Cached(R.layout.cache_post_item_view.makeView(parent),postItemListener)
+        1 -> PostViewHolder.BasePostViewHolder.Base(
+            R.layout.post_item_view.makeView(parent),
+            postItemListener
+        )
+        2 -> PostViewHolder.BasePostViewHolder.Cached(
+            R.layout.cache_post_item_view.makeView(parent),
+            postItemListener
+        )
         else -> PostViewHolder.Failure(R.layout.failure_item_view.makeView(parent))
     }
 

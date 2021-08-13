@@ -1,4 +1,4 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.presentation.customview.ViewMapper
@@ -11,7 +11,6 @@ import java.io.Serializable
  * @author Zinoview on 01.08.2021
  * k.gig@list.ru
  */
-
 
 data class ClickedUiPost(
     private val postId: Int,

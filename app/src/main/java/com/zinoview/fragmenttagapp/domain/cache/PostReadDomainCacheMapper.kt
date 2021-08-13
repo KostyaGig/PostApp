@@ -1,9 +1,7 @@
 package com.zinoview.fragmenttagapp.domain.cache
 
 import com.zinoview.fragmenttagapp.core.Abstract
-import com.zinoview.fragmenttagapp.presentation.cache.CacheUiPost
 import com.zinoview.fragmenttagapp.presentation.cache.RecordCacheState
-import com.zinoview.fragmenttagapp.presentation.cache.UiPostCacheMapper
 import java.io.IOException
 
 
@@ -16,7 +14,7 @@ abstract class PostDomainCacheMapper<T : Any> : Abstract.PostCacheMapper<CacheDo
 
     class Record(
         private val exceptionMapper: Abstract.FactoryMapper<java.lang.Exception,IOException>,
-        private val recordDomainCacheStringMapper: Abstract.FactoryMapper<String,CacheDomainPost<RecordCacheState>>
+        private val recordDomainCacheStringMapper: Abstract.FactoryMapper<String, CacheDomainPost<RecordCacheState>>
     ) : PostDomainCacheMapper<RecordCacheState>() {
 
         override fun map(data: String): CacheDomainPost<RecordCacheState>

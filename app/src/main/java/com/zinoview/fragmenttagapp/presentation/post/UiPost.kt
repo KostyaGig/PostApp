@@ -1,5 +1,6 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
+import android.util.Log
 import com.zinoview.fragmenttagapp.core.Abstract
 import com.zinoview.fragmenttagapp.core.Matches
 

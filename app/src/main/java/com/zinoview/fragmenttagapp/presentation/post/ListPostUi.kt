@@ -1,6 +1,7 @@
-package com.zinoview.fragmenttagapp.presentation
+package com.zinoview.fragmenttagapp.presentation.post
 
 import com.zinoview.fragmenttagapp.core.Abstract
+import com.zinoview.fragmenttagapp.presentation.Communication
 
 
 /**
